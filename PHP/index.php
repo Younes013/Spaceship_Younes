@@ -1,10 +1,9 @@
 <?php 
 require_once 'Entities/Spaceship.php';
-require_once 'Entities/EnemySpaceship.php';
-require_once 'Entities/Asteroid.php';
 
 
-// 🛰️ Normal Spaceship
+
+
 $Spaceship = new Spaceship("Destroyer", 5, 6, 2);
 echo($Spaceship->__getName());
 
@@ -22,7 +21,7 @@ echo("\n{$Spaceship->__getAttack()}");
 
 
 
-// 👾 Enemy Spaceship
+
 $EnemySpaceship = new EnemySpaceship("Alien Destroyer", 10, 8, 4);
 echo("\n\n{$EnemySpaceship->__getName()}");
 
@@ -40,7 +39,7 @@ echo("\n{$EnemySpaceship->__getAttack()}");
 
 
 
-// ☄️ Asteroid
+
 $Asteroid = new Asteroid("Rocky", 15, 20, 0);
 echo("\n\n{$Asteroid->__getName()}");
 
