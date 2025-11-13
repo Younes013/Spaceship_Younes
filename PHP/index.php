@@ -7,21 +7,21 @@ echo($Spaceship->__getName() );
 
 
 
-$Spaceship->__setName(Name:"Voorbeeld 1");
+$Spaceship->__setName(Name:"Cruiser");
 echo("\n{$Spaceship->__getName()}");
 
 
 
-$Spaceship->__setLength(Name:"Voorbeeld 2");
+$Spaceship->__setLength(Name:"5");
 echo("\n{$Spaceship->__getLength()}");
 
 
 
-$Spaceship->__setHP(Name:"Voorbeeld 3");
+$Spaceship->__setHP(Name:"6");
 echo("\n{$Spaceship->__getHP()}");
 
 
 
-$Spaceship->__setAttack(Name:"Voorbeeld 4");
+$Spaceship->__setAttack(Name:"2");
 echo("\n{$Spaceship->__getAttack()}");  
 ?>
