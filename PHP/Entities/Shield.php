@@ -16,3 +16,4 @@ class Shield
         $this->RechargeTime = $RechargeTime;
     }
 }
+?>

@@ -54,27 +54,41 @@ echo("\n{$Asteroid->__getHP()}");
 
 $Asteroid->__setAttack(Attack:"0");
 echo("\n{$Asteroid->__getAttack()}");
+    
 
 
-if ($Spaceship->Attack > $EnemySpaceship->HP) {
+$spaceshipHP = $Spaceship->__getHP();
+$enemySpaceshipHP = $EnemySpaceship->__getHP();
+$asteroidHP = $Asteroid->__getHP();
+
+$spaceshipAttack = $Spaceship->__getAttack();
+$enemySpaceshipAttack = $EnemySpaceship->__getAttack();
+$asteroidAttack = $Asteroid->__getAttack();
+
+
+$enemySpaceshipHP -= $spaceshipAttack;
+$spaceshipHP -= $enemySpaceshipAttack;
+$spaceshipHP -= $asteroidAttack;
+
+
+echo "<br>After the battle:";
+echo "<br>Your Spaceship HP: {$spaceshipHP}";
+echo "<br>Enemy Spaceship HP: {$enemySpaceshipHP}";
+echo "<br>Asteroid HP: {$asteroidHP}";
+
+if ($enemySpaceshipHP <= 0) {
     echo "<br>The Enemy Spaceship has been destroyed.";
-}
-else {
+} else {
     echo "<br>The Enemy Spaceship survived the attack.";
 }
 
-
-if ($EnemySpaceship->Attack > $Spaceship->HP) {
+if ($spaceshipHP <= 0) {
     echo "<br>Your Spaceship has been destroyed.";
-}
-else {
+} else {
     echo "<br>Your Spaceship survived the attack.";
 }
 
-if ($Asteroid->Attack > $Spaceship->HP) {
-    echo "<br>Your Spaceship has been destroyed by the Asteroid.";
-}
-else {
-    echo "<br>An Asteroid has hit your Spaceship (-5 HP).";
+if ($spaceshipHP < 0) {
+    $spaceshipHP = 0; 
 }
 ?>
