@@ -1,4 +1,5 @@
 <?php 
+require_once 'Shield.php';
 class Spaceship
 {
 
@@ -6,6 +7,7 @@ public string $Name;
 public int $Length;
 public int $HP;
 public int $Attack;
+public Shield $Shield;
 
 // 
 public function __construct(string $Name, int $Length, int $HP, int $Attack)
@@ -56,10 +58,30 @@ public function __getAttack() : int
 public function __setAttack(int $Attack) : void{
    $this->Attack = $Attack;
 }
+
+public function __getShield() : Shield
+{
+   return $this->Shield;
 }
 
 
+public function takeAttack(int $damage) : void
+{
+    $remainingDamage = $this->absorbAttack($damage);
+    $this->HP -= $remainingDamage;
 
+    if ($this->HP < 0) {
+        $this->HP = 0;
+    }
+}
+
+public function absorbAttack(int $damage) : int
+{
+    $absorbed = min($this->Shield->Durabillity, $damage);
+    $this->Shield->Durabillity -= $absorbed;
+    return $damage - $absorbed;
+}
+}
 
 class EnemySpaceship
 {
@@ -118,8 +140,20 @@ public function __getAttack() : int
 public function __setAttack(int $Attack) : void{
    $this->Attack = $Attack;
 }
+public function takeAttack(int $damage) : void
+{
+    $this->HP -= $damage;
+
+    if ($this->HP < 0) {
+        $this->HP = 0;
+    }
 }
 
+public function absorbAttack(int $damage) : int
+{
+    return $damage;
+}
+}
 
 
 
