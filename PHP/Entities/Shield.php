@@ -6,6 +6,7 @@ class Shield
     public int $Durabillity;
     public int $Recharge;
     public int $RechargeTime;
+    public int $CurrentDurabillity;
 
 
     public function __construct(string $Name,int $Durabillity,int $Recharge, int $RechargeTime)
