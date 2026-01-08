@@ -1,50 +1,66 @@
 <?php
+
 require_once 'Entities/Spaceship.php';
 require_once 'Scripts/Battle.php';
+require_once 'CRUD.php';
 
 use Scripts\Battle;
 
+// Alle spaceships ophalen (READ)
+$spaceships = SpaceshipRepository::getAll();
 
-$player = new Spaceship(
-    "My Cruiser",
-    random_int(20, 50),
-    random_int(5, 15)
-);
+// Battle starten als formulier is verstuurd
+$winner = null;
+$battle = null;
 
-$enemy = new Spaceship(
-    "Alien Ship",
-    random_int(15, 45),
-    random_int(4, 12)
-);
+if (isset($_POST['fight'])) {
 
+    // Player spaceship
+    $playerData = $spaceships[array_search($_POST['player'], array_column($spaceships, 'id'))];
+    $enemyData  = $spaceships[array_search($_POST['enemy'], array_column($spaceships, 'id'))];
 
-$battle = new Battle($player, $enemy);
- $winner = $battle->start();
-?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Spaceship Battle</title>
-    <link rel="stylesheet" href="CSS/stylesheet.css">
-</head>
-<body>
+    $player = new Spaceship(
+        $playerData['name'],
+        $playerData['hp'],
+        $playerData['attack']
+    );
 
-<h2>🚀Spaceship Battle</h2>
+    $enemy = new Spaceship(
+        $enemyData['name'],
+        $enemyData['hp'],
+        $enemyData['attack']
+    );
 
-<h3>Start HP</h3>
- <p><?php echo $player->getName(); ?> HP: <?php echo $player->getHP(); ?></p>
-  <p><?php echo $enemy->getName(); ?> HP: <?php echo $enemy->getHP(); ?></p>
-
-<h3>Battle log</h3>
-
-<?php
- foreach ($battle->getBattleLog() as $line) {
-     echo "<p>$line</p>";
- }
+    $battle = new Battle($player, $enemy);
+    $winner = $battle->start();
+}
 ?>
 
-<h2>Winner: <?php echo $winner->getName(); ?> 🏆</h2>
 
-</body>
-</html>
+<h2>🚀 Spaceship Battle</h2>
+
+<form method="post">
+    <h3>Select Player</h3>
+    <select name="player" required>
+        <?php foreach ($spaceships as $ship): ?>
+            <option value="<?= $ship['id'] ?>">
+                <?= htmlspecialchars($ship['name']) ?>
+                (HP: <?= $ship['hp'] ?> | ATK: <?= $ship['attack'] ?>)
+            </option>
+        <?php endforeach; ?>
+    </select>
+
+    <h3>Select Enemy</h3>
+    <select name="enemy" required>
+        <?php foreach ($spaceships as $ship): ?>
+            <option value="<?= $ship['id'] ?>">
+                <?= htmlspecialchars($ship['name']) ?>
+                (HP: <?= $ship['hp'] ?> | ATK: <?= $ship['attack'] ?>)
+            </option>
+        <?php endforeach; ?>
+    </select>
+
+    <br><br>
+    <button name="fight">Start Battle</button>
+</form>
+
