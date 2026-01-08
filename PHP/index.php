@@ -4,7 +4,7 @@ require_once 'Scripts/Battle.php';
 
 use Scripts\Battle;
 
-// ruimteschepen maken
+
 $player = new Spaceship(
     "My Cruiser",
     random_int(20, 50),
@@ -17,9 +17,9 @@ $enemy = new Spaceship(
     random_int(4, 12)
 );
 
-// battle starten
+
 $battle = new Battle($player, $enemy);
-$winner = $battle->start();
+ $winner = $battle->start();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -30,18 +30,18 @@ $winner = $battle->start();
 </head>
 <body>
 
-<h2>🚀 Spaceship Battle</h2>
+<h2>🚀Spaceship Battle</h2>
 
 <h3>Start HP</h3>
-<p><?php echo $player->getName(); ?> HP: <?php echo $player->getHP(); ?></p>
-<p><?php echo $enemy->getName(); ?> HP: <?php echo $enemy->getHP(); ?></p>
+ <p><?php echo $player->getName(); ?> HP: <?php echo $player->getHP(); ?></p>
+  <p><?php echo $enemy->getName(); ?> HP: <?php echo $enemy->getHP(); ?></p>
 
 <h3>Battle log</h3>
 
 <?php
-foreach ($battle->getBattleLog() as $line) {
-    echo "<p>$line</p>";
-}
+ foreach ($battle->getBattleLog() as $line) {
+     echo "<p>$line</p>";
+ }
 ?>
 
 <h2>Winner: <?php echo $winner->getName(); ?> 🏆</h2>
