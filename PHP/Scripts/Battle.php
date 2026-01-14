@@ -1,40 +1,21 @@
-<?php 
-namespace Scripts;
+<?php
+class Battle {
+    private Spaceship $a;
+    private Spaceship $b;
 
-use Spaceship;
-
-class Battle
-{
-    private Spaceship $ship1;
-    private Spaceship $ship2;
-    private array $battleLog = [];
-
-    public function __construct(Spaceship $ship1, Spaceship $ship2)
-    {
-        $this->ship1 = $ship1;
-        $this->ship2 = $ship2;
+    public function __construct(Spaceship $a, Spaceship $b) {
+        $this->a = $a;
+        $this->b = $b;
     }
 
-    public function start(): Spaceship
-    {
-        while ($this->ship1->isAlive() && $this->ship2->isAlive()) {
-            $this->ship2->takeDamage($this->ship1->getAttack());
-            $this->battleLog[] =
-                "{$this->ship1->getName()} hits {$this->ship2->getName()}";
+    public function fight(): string {
+        while ($this->a->isAlive() && $this->b->isAlive()) {
+            $this->b->takeDamage($this->a->attack());
+            if (!$this->b->isAlive()) return $this->a->getName();
 
-            if (!$this->ship2->isAlive()) break;
-
-            $this->ship1->takeDamage($this->ship2->getAttack());
-            $this->battleLog[] =
-                "{$this->ship2->getName()} hits {$this->ship1->getName()}";
+            $this->a->takeDamage($this->b->attack());
+            if (!$this->a->isAlive()) return $this->b->getName();
         }
-
-        return $this->ship1->isAlive() ? $this->ship1 : $this->ship2;
-    }
-
-    public function getBattleLog(): array
-    {
-        return $this->battleLog;
+        return "No winner";
     }
 }
-?>

@@ -1,66 +1,128 @@
 <?php
+$conn = new mysqli("localhost", "root", "root", "spaceship");
+if ($conn->connect_error) {
+    die("Database error");
+}
 
-require_once 'Entities/Spaceship.php';
-require_once 'Scripts/Battle.php';
-require_once 'CRUD.php';
+if (isset($_POST['delete'])) {
+    $id = (int)$_POST['id'];
+    $stmt = $conn->prepare("DELETE FROM spaceships WHERE id = ?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+}
 
-use Scripts\Battle;
+if (isset($_POST['create'])) {
+    $name = $_POST['name'];
+    $hp = rand(50, 150);
+    $atk = rand(5, 30);
+    $stmt = $conn->prepare("INSERT INTO spaceships (name, hp, attack) VALUES (?, ?, ?)");
+    $stmt->bind_param("sii", $name, $hp, $atk);
+    $stmt->execute();
+}
 
-// Alle spaceships ophalen (READ)
-$spaceships = SpaceshipRepository::getAll();
+$res = $conn->query("SELECT * FROM spaceships");
+$ships = [];
+while ($row = $res->fetch_assoc()) {
+    $ships[] = $row;
+}
 
-// Battle starten als formulier is verstuurd
 $winner = null;
-$battle = null;
+if (isset($_POST['fight']) && count($ships) >= 2) {
+    $playerId = $_POST['player'];
+    $enemyId = $_POST['enemy'];
 
-if (isset($_POST['fight'])) {
+    if ($playerId == $enemyId) {
+        die("Kies twee verschillende schepen!");
+    }
 
-    // Player spaceship
-    $playerData = $spaceships[array_search($_POST['player'], array_column($spaceships, 'id'))];
-    $enemyData  = $spaceships[array_search($_POST['enemy'], array_column($spaceships, 'id'))];
+    foreach ($ships as $s) {
+        if ($s['id'] == $playerId) $p = $s;
+        if ($s['id'] == $enemyId)  $e = $s;
+    }
 
-    $player = new Spaceship(
-        $playerData['name'],
-        $playerData['hp'],
-        $playerData['attack']
-    );
+    $pHp = $p['hp'];
+    $eHp = $e['hp'];
 
-    $enemy = new Spaceship(
-        $enemyData['name'],
-        $enemyData['hp'],
-        $enemyData['attack']
-    );
+    while ($pHp > 0 && $eHp > 0) {
+        $eHp -= $p['attack'];
+        if ($eHp <= 0) {
+            $winner = $p['name'];
+            break;
+        }
 
-    $battle = new Battle($player, $enemy);
-    $winner = $battle->start();
+        $pHp -= $e['attack'];
+        if ($pHp <= 0) {
+            $winner = $e['name'];
+            break;
+        }
+    }
 }
 ?>
 
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Spaceship Game</title>
+</head>
+<body>
 
-<h2>🚀 Spaceship Battle</h2>
-
+<h2>Maak een nieuw spaceship</h2>
 <form method="post">
-    <h3>Select Player</h3>
-    <select name="player" required>
-        <?php foreach ($spaceships as $ship): ?>
-            <option value="<?= $ship['id'] ?>">
-                <?= htmlspecialchars($ship['name']) ?>
-                (HP: <?= $ship['hp'] ?> | ATK: <?= $ship['attack'] ?>)
-            </option>
+    Naam: <input type="text" name="name" required>
+    <button name="create">Maak spaceship</button>
+</form>
+<p><i>HP en Attack worden random gemaakt!</i></p>
+
+<hr>
+
+<h2>Alle Spaceships</h2>
+<table border="1" cellpadding="5">
+<tr>
+    <th>Naam</th>
+    <th>HP</th>
+    <th>Attack</th>
+    <th>Delete</th>
+</tr>
+
+<?php foreach ($ships as $s): ?>
+<tr>
+    <td><?= htmlspecialchars($s['name']) ?></td>
+    <td><?= $s['hp'] ?></td>
+    <td><?= $s['attack'] ?></td>
+    <td>
+        <form method="post">
+            <input type="hidden" name="id" value="<?= $s['id'] ?>">
+            <button name="delete">❌</button>
+        </form>
+    </td>
+</tr>
+<?php endforeach; ?>
+</table>
+
+<hr>
+
+<h2>Battle!</h2>
+<form method="post">
+    Player:
+    <select name="player">
+        <?php foreach ($ships as $s): ?>
+            <option value="<?= $s['id'] ?>"><?= htmlspecialchars($s['name']) ?> (HP: <?= $s['hp'] ?> | ATK: <?= $s['attack'] ?>)</option>
         <?php endforeach; ?>
     </select>
 
-    <h3>Select Enemy</h3>
-    <select name="enemy" required>
-        <?php foreach ($spaceships as $ship): ?>
-            <option value="<?= $ship['id'] ?>">
-                <?= htmlspecialchars($ship['name']) ?>
-                (HP: <?= $ship['hp'] ?> | ATK: <?= $ship['attack'] ?>)
-            </option>
+    Enemy:
+    <select name="enemy">
+        <?php foreach ($ships as $s): ?>
+            <option value="<?= $s['id'] ?>"><?= htmlspecialchars($s['name']) ?> (HP: <?= $s['hp'] ?> | ATK: <?= $s['attack'] ?>)</option>
         <?php endforeach; ?>
     </select>
 
-    <br><br>
-    <button name="fight">Start Battle</button>
+    <button name="fight">Fight!</button>
 </form>
 
+<?php if ($winner): ?>
+<h2>🏆 De winnaar is: <?= htmlspecialchars($winner) ?>!</h2>
+<?php endif; ?>
+
+</body>
+</html>
